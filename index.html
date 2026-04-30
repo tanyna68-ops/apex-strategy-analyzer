@@ -608,7 +608,7 @@
         <div style="display:flex;align-items:center;gap:6px;">
           <input type="password" id="apiKeyInput" placeholder="sk-ant-api..." 
             style="background:var(--surface);border:1px solid var(--border);color:var(--text);padding:6px 10px;font-family:var(--mono);font-size:10px;width:180px;outline:none;"
-            oninput="updateApiStatus()" />
+            oninput="updateApiStatus()" onchange="updateApiStatus()" onpaste="setTimeout(updateApiStatus,100)" onkeyup="updateApiStatus()" />
           <button onclick="toggleKeyVisibility()" title="Mostrar/ocultar" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:12px;padding:0;">👁</button>
         </div>
         <div id="apiStatus" style="display:flex;align-items:center;gap:6px;">
@@ -992,8 +992,49 @@
     `;
   }
 
+  function getApiKey() {
+    return document.getElementById('apiKeyInput').value.trim();
+  }
+
+  function updateApiStatus() {
+    const key = getApiKey();
+    const dot = document.getElementById('apiDot');
+    const label = document.getElementById('apiLabel');
+    if (key.length > 20) {
+      dot.style.background = 'var(--accent3)';
+      dot.style.animation = 'pulse 2s infinite';
+      label.style.color = 'var(--accent3)';
+      label.textContent = 'API CONECTADA ✓';
+    } else if (key.length > 0) {
+      dot.style.background = 'var(--warn)';
+      dot.style.animation = 'none';
+      label.style.color = 'var(--warn)';
+      label.textContent = 'KEY INVÁLIDA';
+    } else {
+      dot.style.background = 'var(--danger)';
+      dot.style.animation = 'none';
+      label.style.color = 'var(--danger)';
+      label.textContent = 'SIN API KEY';
+    }
+  }
+
+  function toggleKeyVisibility() {
+    const input = document.getElementById('apiKeyInput');
+    input.type = input.type === 'password' ? 'text' : 'password';
+  }
+
+  function makeHeaders() {
+    return {
+      'Content-Type': 'application/json',
+      'x-api-key': getApiKey(),
+      'anthropic-version': '2023-06-01',
+      'anthropic-dangerous-direct-browser-access': 'true'
+    };
+  }
+
   async function runAnalysis(type) {
     if (strategies.length === 0) { notify('⚠️ Agrega estrategias primero'); return; }
+    if (!getApiKey()) { notify('⚠️ Ingresa tu API Key arriba'); return; }
 
     const prompts = {
       optimize: `Eres un experto en trading algorítmico de futuros (NQ, ES, GC). Analiza estos resultados de backtesting de NinjaTrader 8 y proporciona recomendaciones ESPECÍFICAS para optimizar los parámetros de stops y targets.\n\nEstrategias:\n${JSON.stringify(strategies, null, 2)}\n\nProporciona:\n1. Para cada estrategia: el ratio Stop/Target óptimo basado en avgWin/avgLoss\n2. Cálculo del R:R actual vs recomendado\n3. Sugerencias de ajuste en ticks para NQ (tick=$5) y ES (tick=$12.50)\n4. Impacto esperado en el profit factor al implementar cambios\n\nSé específico con números.`,
@@ -1009,7 +1050,7 @@
     try {
       const response = await fetch('https://api.anthropic.com/v1/messages', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: makeHeaders(),
         body: JSON.stringify({
           model: 'claude-sonnet-4-20250514',
           max_tokens: 1000,
@@ -1049,7 +1090,7 @@
     try {
       const response = await fetch('https://api.anthropic.com/v1/messages', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: makeHeaders(),
         body: JSON.stringify({
           model: 'claude-sonnet-4-20250514',
           max_tokens: 1000,
@@ -1088,7 +1129,7 @@
     try {
       const response = await fetch('https://api.anthropic.com/v1/messages', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: makeHeaders(),
         body: JSON.stringify({
           model: 'claude-sonnet-4-20250514',
           max_tokens: 1000,
