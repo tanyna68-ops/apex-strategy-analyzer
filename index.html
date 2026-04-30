@@ -4,22 +4,23 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>VIC · Apex Strategy Analyzer</title>
-<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
   :root {
-    --bg: #080c14;
-    --surface: #0d1420;
-    --surface2: #111b2e;
-    --border: #1e2d45;
-    --accent: #00d4ff;
-    --accent2: #ff6b35;
-    --accent3: #7fff6b;
-    --warn: #ffb347;
-    --danger: #ff4757;
-    --text: #e8f0fe;
-    --muted: #4a6080;
-    --mono: 'Space Mono', monospace;
-    --sans: 'Syne', sans-serif;
+    --bg: #0f1923;
+    --surface: #1a2535;
+    --surface2: #1e2d42;
+    --border: #2d4060;
+    --accent: #38bdf8;
+    --accent2: #fb923c;
+    --accent3: #4ade80;
+    --warn: #fbbf24;
+    --danger: #f87171;
+    --text: #f0f6ff;
+    --text2: #cbd5e1;
+    --muted: #64839e;
+    --mono: 'JetBrains Mono', monospace;
+    --sans: 'Inter', sans-serif;
   }
 
   * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -28,6 +29,8 @@
     background: var(--bg);
     color: var(--text);
     font-family: var(--sans);
+    font-size: 15px;
+    line-height: 1.6;
     min-height: 100vh;
     overflow-x: hidden;
   }
@@ -38,8 +41,8 @@
     position: fixed;
     inset: 0;
     background-image:
-      linear-gradient(rgba(0,212,255,0.03) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(0,212,255,0.03) 1px, transparent 1px);
+      linear-gradient(rgba(56,189,248,0.02) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(56,189,248,0.02) 1px, transparent 1px);
     background-size: 40px 40px;
     pointer-events: none;
     z-index: 0;
@@ -427,13 +430,14 @@
   }
 
   .ai-content {
-    font-size: 14px;
-    line-height: 1.8;
+    font-size: 15px;
+    line-height: 1.9;
     color: var(--text);
     white-space: pre-wrap;
+    font-family: var(--sans);
   }
 
-  .ai-content strong { color: var(--accent); }
+  .ai-content strong { color: var(--accent); font-weight: 600; }
 
   /* LOADING */
   .loading {
@@ -1233,8 +1237,7 @@
 
     // Auto-detect Apex account based on drawdown
     if (s.maxDD > 3000) s.apexAccount = '100k';
-    else if (s.maxDD > 1500) s.apexAccount = '50k';
-    else s.apexAccount = '25k';
+    else s.apexAccount = '50k'; // default to 50k
 
     // Add insight about long/short bias
     if (s.longProfit !== 0 || s.shortProfit !== 0) {
